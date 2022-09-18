@@ -134,7 +134,11 @@ pub fn next(self: *Tokenizer) Token {
                     break;
                 },
                 '#' => {
-                    state = .comment;
+                    if (self.string_type != .unquoted) {
+                        state = .literal;
+                    } else {
+                        state = .comment;
+                    }
                 },
                 '*' => {
                     result.id = .alias;
@@ -602,3 +606,24 @@ test "comments" {
         .eof,
     });
 }
+
+// test "literals not comments" {
+//     try testExpected(
+//         \\'#000000'
+//         \\'[000000'
+//         \\"&someString"
+//     , &[_]Token.Id{
+//         .single_quote,
+//         .literal,
+//         .single_quote,
+//         .new_line,
+//         .single_quote,
+//         .literal,
+//         .single_quote,
+//         .new_line,
+//         .double_quote,
+//         .literal,
+//         .double_quote,
+//         .eof,
+//     });
+// }
